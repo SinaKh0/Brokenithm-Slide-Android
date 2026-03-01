@@ -60,6 +60,8 @@ class BrokenithmApplication : Application() {
     lateinit var extraFatTouchThreshold: FloatPreference
     lateinit var wideTouchRange: BooleanPreference
 
+    lateinit var fullSliderSensors: BooleanPreference
+
     override fun onCreate() {
         super.onCreate()
         lastServer = StringPreference(this, "server", "")
@@ -71,6 +73,7 @@ class BrokenithmApplication : Application() {
         fatTouchThreshold = FloatPreference(this, "fat_touch_threshold", 0.027f)
         extraFatTouchThreshold = FloatPreference(this, "extra_fat_touch_threshold", 0.035f)
         wideTouchRange = BooleanPreference(this, "wide_touch_range", false)
+        fullSliderSensors = BooleanPreference(this, "full_slider_sensors", true)
     }
 
     companion object {

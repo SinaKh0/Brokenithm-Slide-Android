@@ -12,6 +12,14 @@
             android:title="@string/enable_nfc" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Touch Type">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="full_slider_sensors"
+            android:title="Horizontal 32 Zones"
+            android:summary="Split slider into 32 horizontal zones. Disable for vertical split mode (16 zones each split into top/bottom half)." />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Touch Judge">
         <CheckBoxPreference
             android:defaultValue="false"

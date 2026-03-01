@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     private var mTestButton = false
     private var mServiceButton = false
     private data class InputEvent(val keys: MutableSet<Int>? = null, val testButton: Boolean = false, val serviceButton: Boolean = false)
+    private var mFullSliderSensors = true
 
     // LEDs
     private lateinit var mLEDBitmap: Bitmap
@@ -341,7 +342,8 @@ class MainActivity : AppCompatActivity() {
                     if (i == ignoredIndex) continue
                     val x = event.getX(i) + mTouchAreaRect!!.left - windowLeft
                     val y = event.getY(i) + mTouchAreaRect!!.top - windowTop
-                    val pointPos = x / buttonBlockWidth
+                    val iosBlockWidth = windowWidth / 16
+                    val pointPos = if (mFullSliderSensors) x / buttonBlockWidth else x / iosBlockWidth
                     var index = pointPos.toInt()
 
                     if (mEnableTouchSize) {
@@ -376,12 +378,22 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     } else {
-                        if (index > 31) index = 31
-                        touchedButtons.add(index)
-                        if (index > 0 && (pointPos - index) * 4 < 1) {
-                            touchedButtons.add(index - 1)
-                        } else if (index < 31 && (pointPos - index) * 4 > 3) {
-                            touchedButtons.add(index + 1)
+                        if (mFullSliderSensors) {
+                            if (index > 31) index = 31
+                            touchedButtons.add(index)
+                            if (index > 0 && (pointPos - index) * 4 < 1) {
+                                touchedButtons.add(index - 1)
+                            } else if (index < 31 && (pointPos - index) * 4 > 3) {
+                                touchedButtons.add(index + 1)
+                            }
+                        } else {
+                            // Brokenithm-iOS-style: 16 zones, each split into upper/lower half, totaling to 32 zones
+                            if (index > 15) index = 15
+                            val sliderIOHeight = view.height.toFloat()
+                            val localY = event.getY(i)
+                            val isHalfUp = localY / sliderIOHeight < 0.5f
+                            val targetIndex = index * 2 + if (isHalfUp) 0 else 1
+                            touchedButtons.add(targetIndex)
                         }
                     }
                 }
@@ -411,6 +423,7 @@ class MainActivity : AppCompatActivity() {
         mExtraFatTouchSizeThreshold = app.extraFatTouchThreshold.value()
         mEnableNFC = app.enableNFC.value()
         mEnableVibrate = app.enableVibrate.value()
+        mFullSliderSensors = app.fullSliderSensors.value()
     }
 
     private fun enableNfcForegroundDispatch() {
